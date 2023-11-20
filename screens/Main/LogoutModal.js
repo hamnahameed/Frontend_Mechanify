@@ -55,8 +55,10 @@ const LogoutModal = () => {
               style={styles.button}
               onPress={handleLogout}
             >
-              <Text style={styles.buttonText}  onPress={() => {navigation.navigate("Login");
-              setModalVisible(false);}}>Yes</Text>
+            <TouchableOpacity onPress={() => {navigation.navigate("Login"); setModalVisible(false);}}>
+              <Text style={styles.buttonText} >
+              Yes</Text>
+              </TouchableOpacity>
             </TouchableOpacity>
 
             <TouchableOpacity

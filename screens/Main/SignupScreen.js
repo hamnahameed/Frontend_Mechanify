@@ -14,10 +14,64 @@ import { FontAwesome } from '@expo/vector-icons'; // You can use any icon librar
 
 
 const SignupScreen = ({ navigation }) => {
-    const handleSignUp = () => {
-        navigation.navigate('Login'); // Navigate to SignUp screen
-    };
+    // data from backend part
+    const [fdata,setFdata]=useState({
+        username:'',
+        password:'',
+        email:'',
+        role:'',
+        cpassword:''
+      })
+    
+      const [errormsg,setErrormsg]=useState('')
 
+
+      const handleSignUp = async () => {
+        if (fdata.username === '' || fdata.email === '' || fdata.password === '' || fdata.cpassword === '') {
+            setErrormsg('All fields are Required');
+            return;
+        } else {
+            if (fdata.password !== fdata.cpassword) {
+                setErrormsg('Password and Confirm Password should be the same');
+                return;
+            } else {
+                try {
+                    const response = await fetch('http://192.168.1.115:3000/verify', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(fdata)
+                    });
+    
+                    const data = await response.json();
+                    console.log('Response Data:', data);
+    
+                    if (data.error) {
+                        setErrormsg(data.error);
+                    } else if (data.message === 'verification code is sent to your Email') {
+                        // console.log(data.userdata);
+                        try {
+                            alert(data.message)
+                            // console.log('Before navigation attempt');
+                            navigation.navigate('EmailVerification', { userdata: data.userdata });
+                            // console.log('After navigation attempt');
+                        } catch (error) {
+                            console.error('Navigation error:', error);
+                        }
+                        
+                    }
+                    // Handle other cases if needed
+                } catch (error) {
+                    
+                    console.error('Fetch Error:', error);
+                    setErrormsg('Error: ' + error.message);
+                }
+            }
+        }
+    };
+    
+// ************end*************
     const [selectedRole, setSelectedRole] = useState('user'); // Default role is 'user'
 
   const handleRoleChange = (role) => {
@@ -25,6 +79,7 @@ const SignupScreen = ({ navigation }) => {
     
   };
 
+ 
   const handleSubmit = () => {
     // Here, you can use the `selectedRole` state to determine which role the user selected.
     // You can send this value to your backend for user registration.
@@ -35,161 +90,91 @@ const SignupScreen = ({ navigation }) => {
     return (
 
         // background
-        <View style={
-            styles.container
-        }>
-            <ImageBackground source={
-                require('../../assets/bg.jpeg')
-            }
-                style={
-                    styles.backgroundImage
-                }>
-                <View style={
-                    styles.logoContainer
-                }>
+        <View style={styles.container}>
+            <ImageBackground source={require('../../assets/bg.jpeg')}style={styles.backgroundImage}>
+                <View style={styles.logoContainer}>
 
-                    {/* logo */}
-                    <View style={
-                        styles.logo
-                    }>
-                        <Image source={
-                            require('../../assets/logo2.png')
-                        }
-                            style={
-                                styles.logoImage
-                            } />
+            {/* logo */}
+                    <View style={styles.logo }>
+                        <Image source={require('../../assets/logo2.png')} style={styles.logoImage} />
                     </View>
                 </View>
 
+{
+    errormsg?<Text style={styles.errormsg}>{errormsg}</Text> : null
+}
                 {/* signup form  */}
-                <View style={
-                    styles.formContainer
-                }>
+                <View style={styles.formContainer}>
 
-                    <Text style={
-                        styles.placeholder
-                    }>Username</Text>
-                    <View style={
-                        styles.inputContainer
-                    }>
-                        <Image source={
-                            require('../../assets/userIcon.png')
-                        }
-                            style={
-                                styles.inputIcon
-                            } />
+                    <Text style={styles.placeholder}>Username</Text>
+                    <View style={styles.inputContainer}>
+                        <Image source={require('../../assets/userIcon.png')}
+                            style={styles.inputIcon} />
 
-                        <TextInput style={
-                            styles.input
-                        }
+                        <TextInput style={styles.input}
                             placeholder="username"
                             placeholderTextColor="black"
-                            onChangeText={
-                                (text) => setUsername(text)
-                            } />
+                            onPressIn={() => setErrormsg(null)}
+                            onChangeText={(text) => setFdata({...fdata,username:text})} />
                     </View>
 
 
-                    <Text style={
-                        styles.placeholder
-                    }>Email Address</Text>
-                    <View style={
-                        styles.inputContainer
-                    }>
-                        <Image source={
-                            require('../../assets/email.png')
-                        }
-                            style={
-                                styles.inputIcon
-                            } />
-                        <TextInput style={
-                            styles.input
-                        }
+                    <Text style={styles.placeholder}>Email Address</Text>
+                    <View style={styles.inputContainer}>
+                        <Image source={require('../../assets/email.png')}
+                            style={styles.inputIcon} />
+                        <TextInput style={styles.input}
                             placeholder="email"
                             placeholderTextColor="black"
-                            onChangeText={
-                                (text) => setEmail(text)
-                            } />
+                            onPressIn={() => setErrormsg(null)}
+                            onChangeText={(text) => setFdata({...fdata,email:text})} />
                     </View>
 
-                    <Text style={
-                        styles.placeholder
-                    }>Password</Text>
-                    <View style={
-                        styles.inputContainer
-                    }>
-                        <Image source={
-                            require('../../assets/passIcon.png')
-                        }
-                            style={
-                                styles.inputIcon
-                            } />
-                        <TextInput style={
-                            styles.input
-                        }
+                    <Text style={styles.placeholder}>Password</Text>
+                    <View style={styles.inputContainer}>
+                        <Image source={require('../../assets/passIcon.png')}
+                            style={styles.inputIcon} />
+                        <TextInput style={styles.input}
                             placeholder="password"
                             placeholderTextColor="black"
+                            onPressIn={() => setErrormsg(null)}
                             secureTextEntry
-                            onChangeText={
-                                (text) => setPassword(text)
-                            } />
+                            onChangeText={(text) => setFdata({...fdata,password:text})} />
                     </View>
-                    <Text style={
-                        styles.placeholder
-                    }>Re-Enter Password</Text>
-                    <View style={
-                        styles.inputContainer
-                    }>
-                        <Image source={
-                            require('../../assets/passIcon.png')
-                        }
-                            style={
-                                styles.inputIcon
-                            } />
-                        <TextInput style={
-                            styles.input
-                        }
+                    <Text style={styles.placeholder}>Re-Enter Password</Text>
+                    <View style={styles.inputContainer}>
+                        <Image source={require('../../assets/passIcon.png')}
+                            style={styles.inputIcon} />
+                        <TextInput style={styles.input }
                             placeholder="confirm password"
                             placeholderTextColor="black"
+                            onPressIn={() => setErrormsg(null)}
                             secureTextEntry
-                            onChangeText={
-                                (text) => setPassword(text)
-                            } />
+                            onChangeText={(text) => setFdata({...fdata,cpassword:text})} />
 
                     </View>
- <Text
- style={
-                        styles.placeholder
-                    }>Login As</Text>
+                    <Text style={styles.placeholder}>Login As</Text>
 
-                    <View style={[styles.inputContainer,{height:50}] }>
-      <Picker style={
-                            styles.input
-                           
-                        }
-                        selectedValue={selectedRole}
-        onValueChange={(itemValue, itemIndex) => handleRoleChange(itemValue)}
-      
-
-      >
-      
-     
-        <Picker.Item label="User" value="user"  />
-        <Picker.Item label="Mechanic" value="mechanic" />
-        <Picker.Item label="Shop Owner" value="shopOwner" />
-      </Picker>
-      </View>
+                <View style={[styles.inputContainer,{height:50}] }>
+                    <Picker style={styles.input} selectedValue={selectedRole} 
+                        onValueChange={(itemValue, itemIndex) => {
+                            handleRoleChange(itemValue);
+                            setFdata({ ...fdata, role: itemValue });
+                        }}                       
+                         onPressIn={() => setErrormsg(null)}>
+                        
+                    
+                        <Picker.Item label="User" value="user"  />
+                        <Picker.Item label="Mechanic" value="mechanic" />
+                        <Picker.Item label="Shop Owner" value="shopOwner" />
+                    </Picker>
+                </View>
 
 
 
       
-                    <TouchableOpacity style={
-                        styles.loginButton
-                    }
-                        onPress={handleSignUp}>
-                        <Text style={
-                            styles.loginButtonText
-                        }>Sign up</Text>
+                    <TouchableOpacity style={styles.loginButton} onPress={handleSignUp}>
+                        <Text style={styles.loginButtonText}>Sign up</Text>
                     </TouchableOpacity>
 
                     <Text style={
@@ -200,7 +185,7 @@ const SignupScreen = ({ navigation }) => {
                         }
                     }>Already have an account?
                     </Text>
-                    <TouchableOpacity onPress={handleSignUp}>
+                    <TouchableOpacity onPress={()=>navigation.navigate('EmailVerification')}>
                         <Text style={
                             {
                                 textAlign: "center",
@@ -237,7 +222,7 @@ const styles = StyleSheet.create({
         height: 150,
         borderWidth: 1,
         borderColor: "#1697C7",
-        borderRadius: 70,
+        borderRadius: 80,
         backgroundColor: 'white',
         justifyContent: 'center',
         alignItems: 'center'
@@ -248,6 +233,15 @@ const styles = StyleSheet.create({
         left: 18,
         top: 20,
         resizeMode: 'contain'
+    },
+    errormsg:{
+        color: 'white',
+        fontSize: 15,
+        fontWeight: 'bold',
+        backgroundColor: 'red',
+        textAlign:'center',
+        margin:2,
+        padding:5   
     },
     formContainer: {
         width: '80%',

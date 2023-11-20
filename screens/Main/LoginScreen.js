@@ -12,7 +12,18 @@
 
 
 
-        const LoginScreen = ({navigation}) => { // login functioanlity
+        const LoginScreen = ({navigation}) => { 
+
+            // backend data handle
+            const [fdata, setFdata] = useState({
+                email: '',
+                password: ''
+            });
+
+            const [errormsg,setErrormsg] = useState(null)
+
+            // ****End************
+            // login functioanlity
             const [username, setUsername] = useState('');
             const [password, setPassword] = useState('');
 
@@ -20,25 +31,38 @@
 
         // Login functionality
             const handleLogin = ({props}) => {
-                const dummyPassword = '123';
-
-                // Check if username and password match dummy data
-                if (username === "admin" && password === dummyPassword) {
-                navigation.navigate('Admin')
-
-                } else if (username === "user" && password === dummyPassword) {
-                    navigation.navigate('User');
-
-                } else if (username === "mechanic" && password === dummyPassword) {
-                    navigation.navigate('Mechanic');
-
-                } else if (username === "shop" && password === dummyPassword) {
-                    navigation.navigate('Shop');
-
-                } else {
-                    alert('Invalid username or password');
+                console.log(fdata)
+                if(fdata.email === '' || fdata.password === ''){
+                    setErrormsg('All fields are Required')
+                    return;
                 }
-            };
+                else{
+                    fetch('http://192.168.1.115:3000/login',{
+                        method:'POST',
+                        headers:{
+                            'Content-Type':'application/json'
+                        },
+                        body:JSON.stringify(fdata)
+                        
+                    })
+                    .then((res) => res.json()).then(
+                        data => {
+                            console.log(data)
+                            if(data.error){
+                                setErrormsg(data.error)
+                            }
+                            else {
+                                // Check the role and navigate accordingly
+                                if (data.role === 'mechanic') {
+                                    navigation.navigate('Mechanic');
+                                } else if (data.role === 'user') {
+                                    navigation.navigate('User');
+                                }
+                            }
+                        }
+                    )
+                }
+            }
 
             // signup functionality
             const handleSignUp = () => {
@@ -58,21 +82,22 @@
                             </View>
                         </View>
                     
-
+{
+    errormsg ?<Text style={styles.errormsg}>{errormsg}</Text> : null
+}
         {/* login form */}
                         <View style={styles.formContainer}>
                             <Text style={styles.welcome}>Welcome Back!</Text>
     <ScrollView>
-                            <Text style={styles.placeholder }>Username</Text>
+                            <Text style={styles.placeholder }>Email</Text>
                             <View style={styles.inputContainer }>
-                                <Image source={require('../../assets/userIcon.png')}
+                                <Image source={require('../../assets/email.png')}
                                     style={styles.inputIcon}/>
                                 <TextInput style={styles.input}
-                                    placeholder="username"
+                                    placeholder="Email"
                                     placeholderTextColor="black"
-                                    onChangeText={
-                                        (text) => setUsername(text)
-                                    }/>
+                                    onPressIn={() => setErrormsg(null)}
+                                    onChangeText={(text) => setFdata({...fdata,email:text})} />
                             </View>
                             <Text style={styles.placeholder}>Password</Text>
                             <View style={styles.inputContainer}>
@@ -81,10 +106,9 @@
                                 <TextInput style={styles.input}
                                     placeholder="password"
                                     placeholderTextColor="black"
+                                    onPressIn={() => setErrormsg(null)}
                                     secureTextEntry
-                                    onChangeText={
-                                        (text) => setPassword(text)
-                                    }/>
+                                    onChangeText={(text) => setFdata({...fdata,password:text})} />
                             </View>
                             <TouchableOpacity onPress={
                                     () => alert('Forgot Password?')
@@ -162,7 +186,7 @@
                 height: 150,
                 borderWidth: 1,
                 borderColor: "#1697C7",
-                borderRadius: 70,
+                borderRadius: 80,
                 backgroundColor: 'white',
                 justifyContent: 'center',
                 alignItems: 'center'
@@ -173,6 +197,15 @@
                 left: 18,
                 top: 20,
                 resizeMode: 'contain'
+            },
+            errormsg:{
+                color: 'white',
+                fontSize: 15,
+                fontWeight: 'bold',
+                backgroundColor: 'red',
+                textAlign:'center',
+                margin:2,
+                padding:5   
             },
             formContainer: {
                 width: '80%',
