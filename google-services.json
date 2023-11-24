@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "850321507902",
+    "project_id": "mechanifyauth",
+    "storage_bucket": "mechanifyauth.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:850321507902:android:ff142a9c94ddcc2a7ff36f",
+        "android_client_info": {
+          "package_name": "com.mechanify.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "850321507902-9hfvub3rgr2mea08me11tlu457tvgtce.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mechanify.app",
+            "certificate_hash": "e9a7500887292ef7be9edf6e389b3570670037a9"
+          }
+        },
+        {
+          "client_id": "850321507902-kcknilevv78s82i74hm15hll72gn62jp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mechanify.app",
+            "certificate_hash": "2046ac4f2205a68319f8c1ddc5cfe8c81c839173"
+          }
+        },
+        {
+          "client_id": "850321507902-0udsckqf3sqhavk6p4r9p6b7lgn5126h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCYoB8Is140xGdT8Wlfxgs9rK1v6NMsqis"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "850321507902-0udsckqf3sqhavk6p4r9p6b7lgn5126h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
